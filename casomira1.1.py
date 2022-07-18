@@ -3,7 +3,7 @@ from datetime import date
 from datetime import datetime
 import time
 
-mydb = mysql.connector.connect(host='localhost',user = 'root',passwd='01041976', database='casomira')
+mydb = mysql.connector.connect(host='localhost',user = 'root',passwd='01041976', database='casomira1')
 
 
 def let_user_pick(options):
@@ -23,10 +23,9 @@ def new_person():
     #INSERT NEW VALUE TO THE PEOPLE TABLE
 
     mycursor = mydb.cursor()
-    id = input('What their ID will bee?')
     f_name = input('What is their first name?')
     l_name = input('What is their last name?')
-    mycursor.execute(f"insert into people values ('{id}','{f_name}','{l_name}', 0)")
+    mycursor.execute(f"insert into people (first_name,last_name) values ('{f_name}','{l_name}')")
     mycursor.execute("select * from people")
     result = mycursor.fetchall()
     mydb.commit()
@@ -166,7 +165,7 @@ def time_of_flight():
         print(f"Active flight is : {active_flight}")
         mycursor.close()
     choose_flight()
-time_of_flight()
+
 
 
     # def time_convert(sec):
@@ -225,5 +224,4 @@ work_with_flights_options = {
 }
 
 
-#zkouska githubu
-print("this is a test")
+new_person()
