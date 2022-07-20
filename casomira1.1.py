@@ -18,6 +18,7 @@ def let_user_pick(options):
         pass
     return None
 
+
 #ADD NEW DATA TO THE DATABASE
 def new_person():
     #INSERT NEW VALUE TO THE PEOPLE TABLE
@@ -178,6 +179,7 @@ def takeoff_time_add():
     active_flight_id = choose_a_flight_without_takeoff()
     add_takeoff_time()
 
+
 #ADD LANDING TIME
 def landing_time_add():
 
@@ -226,28 +228,47 @@ def menu():
             4: 'Exit',
         }
 
-        while True:
-            try:
-                print(menu_options)
-                opt = int(input('What do you want to do?'))
-            except ValueError:
-                print('Please enter a valid choice!')
-            else:
-                break
+        try:
+            print(menu_options)
+            opt = int(input('What do you want to do?'))
+        except ValueError:
+            print('Please enter a valid choice!')
+            main_menu()
 
         print(f'Your choice is: {menu_options[opt]}')
         if opt == 1:
             new_person()
         if opt == 2:
             new_aircraft()
-        # if opt == 3:
+        if opt == 3:
+            work_with_casomira()
+    def work_with_casomira():
+        casomira_options = {
+            1: 'Add new flight',
+            2: 'Add takeoff time to an existing flight',
+            3: 'Add landing time to an existing flight',
+            4: 'Go back to main menu'
+        }
 
-work_with_flights_options = {
-    1: 'Add new flight',
-    2: 'Add time to the existing flights',
-    3: 'Go back to the main menu'
-}
+        try:
+            print(casomira_options)
+            opt = int(input('What do you want to do?'))
+        except ValueError:
+            print('Please enter a valid choice!')
+            work_with_casomira()
 
+        print(f'Your choice is: {casomira_options[opt]}')
+        if opt == 1:
+            new_flight()
+        if opt == 2:
+            takeoff_time_add()
+        if opt == 3:
+            landing_time_add()
+        if opt == 4:
+            main_menu()
+    main_menu()
+
+menu()
 
 
 
