@@ -146,53 +146,71 @@ def new_flight():
     mydb.commit()
 
 
+#ADD TAKEOFF TIME
+def takeoff_time_add():
 
+    def capture_takeoff_time():
+        input('Press enter to capture the takeoff time')
+        now = datetime.now()
+        takeoff_time = now.strftime('%H:%M:%S')
+        print(takeoff_time)
+        return takeoff_time
 
+    def choose_a_flight_without_takeoff():
+        mycursor = mydb.cursor(buffered=True)
+        list_of_flights = []
+        mycursor.execute("select * from flights where flight_takeoff is null")
+        result = mycursor.fetchall()
+        for i in result:
+            i = list(i)
+            list_of_flights.append(i)
+        active_flight = list_of_flights[let_user_pick(list_of_flights)]
+        active_flight_id = active_flight[0]
+        mycursor.close()
+        return active_flight_id
 
+    def add_takeoff_time():
+        mycursor = mydb.cursor(buffered=True)
+        mycursor.execute(f"update flights set flight_takeoff = '{takeoff_time}' where flight_id = {active_flight_id}")
+        mydb.commit()
+        mycursor.close()
+    takeoff_time = capture_takeoff_time()
+    active_flight_id = choose_a_flight_without_takeoff()
+    add_takeoff_time()
 
+#ADD LANDING TIME
+def landing_time_add():
 
+    def capture_landing_time():
+        input('Press enter to capture the landing time')
+        now = datetime.now()
+        landing_time = now.strftime('%H:%M:%S')
+        print(landing_time)
+        return landing_time
 
+    def choose_a_flight_without_landing_with_takeoff():
+        mycursor = mydb.cursor(buffered=True)
+        list_of_flights = []
+        mycursor.execute("select * from flights where flight_takeoff is not null and flight_landing is null")
+        result = mycursor.fetchall()
+        for i in result:
+            i = list(i)
+            list_of_flights.append(i)
+        active_flight = list_of_flights[let_user_pick(list_of_flights)]
+        active_flight_id = active_flight[0]
+        mycursor.close()
+        return active_flight_id
 
-    #INSERT NEW FLIGHT COUNT
+    def add_landing_time():
+        mycursor = mydb.cursor(buffered=True)
+        mycursor.execute(f"update flights set flight_landing = '{landing_time}' where flight_id = {active_flight_id}")
+        mydb.commit()
+        mycursor.close()
 
-#ADD TAKEOFF TIME FOR THE CHOOSEN FLIGHT
-# def time_of_flight():
-#     def choose_flight():
-#         mycursor = mydb.cursor()
-#         list_of_flights = []
-#         mycursor.execute("select * from flights where flight_takeoff is null or flight_landing is null")
-#         result = mycursor.fetchall()
-#         for i in result:
-#             i = list(i)
-#             list_of_flights.append(i)
-#         active_flight = list_of_flights[let_user_pick(list_of_flights)]
-#
-#         print(f"Active flight is : {active_flight}")
-#         mycursor.close()
-#     choose_flight()
-#
-#
-#
-#     # def time_convert(sec):
-#     #     mins = sec // 60
-#     #     sec = sec % 60
-#     #     hours = mins // 60
-#     #     mins = mins % 60
-#     #     return("Time Lapsed = {1} minutes".format(int(mins)))
-#     #
-#     # input('Press ENTER to START the flight')
-#     # takeoff_time = datetime.now()
-#     # print(f"Takeoff time is {takeoff_time}")
-#     #
-#     #
-#     # input('Press ENTER to END the flight for the towplain')
-#     # towplain_landing_time = time.time()
-#     #
-#     # input('Press ENTER to END the flight for the glider')
-#     # glider_landing_time = time.time()
-#     #
-#     # print("")
-#     #
+    landing_time = capture_landing_time()
+    active_flight_id = choose_a_flight_without_landing_with_takeoff()
+    add_landing_time()
+
 
 #CASOMIRA PROGRAM LOGIC
 
@@ -231,66 +249,5 @@ work_with_flights_options = {
 }
 
 
-def takeoff_time_add():
 
-    def capture_takeoff_time():
-        input('Press enter to capture the takeoff time')
-        now = datetime.now()
-        takeoff_time = now.strftime('%H:%M:%S')
-        print(takeoff_time)
-        return takeoff_time
-
-    def choose_a_flight_without_takeoff():
-        mycursor = mydb.cursor(buffered=True)
-        list_of_flights = []
-        mycursor.execute("select * from flights where flight_takeoff is null")
-        result = mycursor.fetchall()
-        for i in result:
-            i = list(i)
-            list_of_flights.append(i)
-        active_flight = list_of_flights[let_user_pick(list_of_flights)]
-        active_flight_id = active_flight[0]
-        mycursor.close()
-        return active_flight_id
-
-    def add_takeoff_time():
-        mycursor = mydb.cursor(buffered=True)
-        mycursor.execute(f"update flights set flight_takeoff = '{takeoff_time}' where flight_id = {active_flight_id}")
-        mydb.commit()
-        mycursor.close()
-    takeoff_time = capture_takeoff_time()
-    active_flight_id = choose_a_flight_without_takeoff()
-    add_takeoff_time()
-
-def landing_time_add():
-
-    def capture_landing_time():
-        input('Press enter to capture the landing time')
-        now = datetime.now()
-        landing_time = now.strftime('%H:%M:%S')
-        print(landing_time)
-        return landing_time
-
-    def choose_a_flight_without_landing_with_takeoff():
-        mycursor = mydb.cursor(buffered=True)
-        list_of_flights = []
-        mycursor.execute("select * from flights where flight_takeoff is not null and flight_landing is null")
-        result = mycursor.fetchall()
-        for i in result:
-            i = list(i)
-            list_of_flights.append(i)
-        active_flight = list_of_flights[let_user_pick(list_of_flights)]
-        active_flight_id = active_flight[0]
-        mycursor.close()
-        return active_flight_id
-
-    def add_landing_time():
-        mycursor = mydb.cursor(buffered=True)
-        mycursor.execute(f"update flights set flight_landing = '{landing_time}' where flight_id = {active_flight_id}")
-        mydb.commit()
-        mycursor.close()
-
-    landing_time = capture_landing_time()
-    active_flight_id = choose_a_flight_without_landing_with_takeoff()
-    add_landing_time()
 
