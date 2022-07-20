@@ -46,7 +46,7 @@ def new_aircraft():
 
 #ADD NEW FLIGHT INFO
 def new_flight():
-    mydb = mysql.connector.connect(host='localhost', user='root', passwd='01041976', database='casomira')
+    mydb = mysql.connector.connect(host='localhost', user='root', passwd='01041976', database='casomira1')
     mycursor = mydb.cursor()
     #INSERT NEW FLIGHT INFORMATION
     print('New flight created')
@@ -83,14 +83,19 @@ def new_flight():
     def aircraft_flight_no():
         #returns flight_no
         mycursor = mydb.cursor(buffered=True)
-        mycursor.execute(f"select max(aircraft_flight_no) from flights where aircraft_registration ='{active_aircraft_id}'")
-        result = list(mycursor.fetchone())
-        flight_no = result[0]
-        mycursor.close()
-        if flight_no is None:
+        try:
+            mycursor.execute(f"select max(aircraft_flight_no) from flights where aircraft_registration ='{active_aircraft_id}'")
+            result = list(mycursor.fetchone())
+            flight_no = result[0]
+            mycursor.close()
+            if flight_no is None:
+                flight_no = 1
+            else:
+                flight_no = int(flight_no) + 1
+        except:
             flight_no = 1
-        else:
-            flight_no = int(flight_no) + 1
+
+
         return flight_no
 
     #CHOOSE CAPITAN FROM A LIST OF PEOPLE
@@ -188,6 +193,7 @@ def time_of_flight():
     #
     # print("")
     #
+
 #CASOMIRA PROGRAM LOGIC
 def menu():
     print('Hello and welcome to  CASOMIRA')
@@ -224,4 +230,4 @@ work_with_flights_options = {
 }
 
 
-new_person()
+new_flight()
