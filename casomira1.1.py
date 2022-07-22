@@ -291,4 +291,5 @@ def main():
             main_menu()
 
 
-main()
+while True:
+    main()
