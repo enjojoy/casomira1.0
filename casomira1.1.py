@@ -1,11 +1,11 @@
 # CASOMIRA PROGRAM LOGIC
 
-def main():
-    import mysql.connector
+def main_men():
+    import pymysql.cursors
     from datetime import date
     from datetime import datetime
 
-    mydb = mysql.connector.connect(host='localhost', user='root', passwd='01041976', database='casomira1')
+    mydb = pymysql.connect(host='localhost', user='root', password='01041976', database='casomira1', cursorclass=pymysql.cursors.DictCursor)
 
     def let_user_pick(options):
         for idx, element in enumerate(options):
@@ -292,4 +292,4 @@ def main():
 
 
 while True:
-    main()
+    main_men()
