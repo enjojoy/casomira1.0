@@ -48,7 +48,6 @@ def main_men():
 
     # ADD NEW FLIGHT INFO
     def new_flight():
-        mydb = mysql.connector.connect(host='localhost', user='root', passwd='01041976', database='casomira1')
         mycursor = mydb.cursor()
         # INSERT NEW FLIGHT INFORMATION
         print('New flight created')
@@ -71,12 +70,11 @@ def main_men():
         def choose_aircraft():
             list_of_aircrafts = []
             mycursor.execute("select * from aircraft")
-            result = mycursor.fetchall()
-            for i in result:
-                i = list(i)
+            for i in mycursor.fetchall():
                 list_of_aircrafts.append(i)
             active_aircraft = list_of_aircrafts[let_user_pick(list_of_aircrafts)]
-            active_aircraft_id = active_aircraft[0]
+            active_aircraft_id = list(active_aircraft.items())[0][1]
+            print(active_aircraft_id)
             mycursor.close()
             return active_aircraft_id
 
@@ -84,7 +82,7 @@ def main_men():
 
         def aircraft_flight_no():
             # returns flight_no
-            mycursor = mydb.cursor(buffered=True)
+            mycursor = mydb.cursor()
             try:
                 mycursor.execute(
                     f"select max(aircraft_flight_no) from flights where aircraft_registration ='{active_aircraft_id}'")
@@ -102,29 +100,26 @@ def main_men():
 
         # CHOOSE CAPITAN FROM A LIST OF PEOPLE
         def choose_capitan():
-            mycursor = mydb.cursor(buffered=True)
+            mycursor = mydb.cursor()
             list_of_people = []
             mycursor.execute("select * from people")
-            result = mycursor.fetchall()
-            for i in result:
-                i = list(i)
+            for i in mycursor.fetchall():
                 list_of_people.append(i)
             active_capitan = list_of_people[let_user_pick(list_of_people)]
             mycursor.close()
-            return active_capitan[0]
+            print(list(active_capitan.items())[0][1])
+            return list(active_capitan.items())[0][1]
 
         # CHOOSE STUDENT FROM A LIST OF PEOPLE
         def choose_student():
-            mycursor = mydb.cursor(buffered=True)
+            mycursor = mydb.cursor()
             list_of_stu = []
             mycursor.execute("select * from people")
-            result = mycursor.fetchall()
-            for i in result:
-                i = list(i)
+            for i in mycursor.fetchall():
                 list_of_stu.append(i)
             active_student = list_of_stu[let_user_pick(list_of_stu)]
             mycursor.close()
-            return active_student[0]
+            return list(active_student.items())[0][1]
 
         # CHOOSE START TYPE
         def choose_start_type():
@@ -142,7 +137,7 @@ def main_men():
         print("Please choose a start type:")
         start_type = choose_start_type()
         date_today = date.today()
-        mycursor = mydb.cursor(buffered=True)
+        mycursor = mydb.cursor()
         mycursor.execute(
             f"INSERT INTO flights (date, aircraft_registration, aircraft_flight_no, capitan_id, student_id, start_type) VALUES (SYSDATE(), '{active_aircraft_id}', '{aircraft_flight_no}', '{capitan_id}', '{student_id}', '{start_type}');")
         mycursor.close()
@@ -159,42 +154,35 @@ def main_men():
             return takeoff_time
 
         def choose_a_flight_without_takeoff():
-            mycursor = mydb.cursor(buffered=True)
+            mycursor = mydb.cursor()
             list_of_flights = []
             mycursor.execute("select * from flights where flight_takeoff is null")
-            result = mycursor.fetchall()
-            for i in result:
-                i = list(i)
+            for i in mycursor.fetchall():
                 list_of_flights.append(i)
             active_flight = list_of_flights[let_user_pick(list_of_flights)]
-            active_flight_id = active_flight[0]
+            active_flight_id = list(active_flight.items())[0][1]
             mycursor.close()
             return active_flight_id
 
         def add_takeoff_time():
-            mycursor = mydb.cursor(buffered=True)
+            mycursor = mydb.cursor()
             mycursor.execute(
                 f"update flights set flight_takeoff = '{takeoff_time}' where flight_id = {active_flight_id}")
             mydb.commit()
             mycursor.close()
 
         takeoff_time = capture_takeoff_time()
-        active_flight_id = choose_a_flight_without_takeoff()
-        print(type(active_flight_id))
-        while True:
+        one_more_time = True
+        while one_more_time:
+            active_flight_id = choose_a_flight_without_takeoff()
+            print(type(active_flight_id))
             add_takeoff_time()
             answer = input(f'Do you want to add the time: {takeoff_time} to another takeoff? '
                            f'Answer Y or N:')
             if answer == 'Y':
-                active_flight_id = choose_a_flight_without_takeoff()
-                print(type(active_flight_id))
-                # if active_flight_id == "":
-                #     print("No flights with no takeoff time left")
-                #     break
-                # else:
-                #     continue
+                one_more_time = True
             else:
-                break
+                one_more_time = False
 
     # ADD LANDING TIME
     def landing_time_add():
@@ -207,20 +195,18 @@ def main_men():
             return landing_time
 
         def choose_a_flight_without_landing_with_takeoff():
-            mycursor = mydb.cursor(buffered=True)
+            mycursor = mydb.cursor()
             list_of_flights = []
             mycursor.execute("select * from flights where flight_takeoff is not null and flight_landing is null")
-            result = mycursor.fetchall()
-            for i in result:
-                i = list(i)
+            for i in mycursor.fetchall():
                 list_of_flights.append(i)
             active_flight = list_of_flights[let_user_pick(list_of_flights)]
-            active_flight_id = active_flight[0]
             mycursor.close()
+            active_flight_id = list(active_flight.items())[0][1]
             return active_flight_id
 
         def add_landing_time():
-            mycursor = mydb.cursor(buffered=True)
+            mycursor = mydb.cursor()
             mycursor.execute(
                 f"update flights set flight_landing = '{landing_time}' where flight_id = {active_flight_id}")
             mydb.commit()
@@ -231,35 +217,6 @@ def main_men():
         add_landing_time()
 
     print('Hello and welcome to  CASOMIRA')
-
-    # CHOICE OF AN OPTION
-    def main_menu():
-
-        menu_options = {
-            1: 'Add new person to the database',
-            2: 'Add new aircraft to the database',
-            3: 'Work with casomira',
-            4: 'Exit',
-        }
-
-        try:
-            print(menu_options)
-            opt = int(input('What do you want to do?'))
-        except ValueError:
-            print('Please enter a valid choice!')
-            main_menu()
-
-        print(f'Your choice is: {menu_options[opt]}')
-        if opt == 1:
-            new_person()
-            main_menu()
-        if opt == 2:
-            new_aircraft()
-            main_menu()
-        if opt == 3:
-            work_with_casomira()
-
-    main_menu()
 
     def work_with_casomira():
         casomira_options = {
@@ -289,7 +246,51 @@ def main_men():
             work_with_casomira()
         if opt == 4:
             main_menu()
+    # CHOICE OF AN OPTION
 
+    def main_menu():
+
+        menu_options = {
+            1: 'Add new person to the database',
+            2: 'Add new aircraft to the database',
+            3: 'Work with casomira',
+            4: 'Exit',
+        }
+
+        try:
+            print(menu_options)
+            opt = int(input('What do you want to do?'))
+        except ValueError:
+            print('Please enter a valid choice!')
+            main_menu()
+
+        print(f'Your choice is: {menu_options[opt]}')
+        if opt == 1:
+            new_person()
+            main_menu()
+        if opt == 2:
+            new_aircraft()
+            main_menu()
+        if opt == 3:
+            work_with_casomira()
+    main_menu()
 
 while True:
     main_men()
+
+# import pymysql.cursors
+
+# mydb = pymysql.connect(host='localhost', user='root', password='01041976', database='casomira1', cursorclass=pymysql.cursors.DictCursor)
+
+# mycursor = mydb.cursor()
+# mycursor.execute('select*from aircraft')
+# list_air = []
+#
+# for item in mycursor.fetchall():
+#     list_air.append(item)
+# print(list_air)
+
+
+
+
+
