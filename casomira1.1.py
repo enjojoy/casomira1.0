@@ -134,18 +134,24 @@ def main_men():
         capitan_id = choose_capitan()
         mydb2 = pymysql.connect(host='localhost', user='root', password='01041976', database='casomira1')
         mycursor = mydb2.cursor()
-        mycursor.execute(f"SELECT last_name from people where person_id = 1")
+        mycursor.execute(f"SELECT last_name from people where person_id = {capitan_id}")
         capitan_last_name = mycursor.fetchone()[0]
         mycursor.close()
         mydb2.close()
         print("Please choose a student:")
         student_id = choose_student()
         print(student_id)
+        mydb2 = pymysql.connect(host='localhost', user='root', password='01041976', database='casomira1')
+        mycursor = mydb2.cursor()
+        mycursor.execute(f"SELECT last_name from people where person_id = {student_id}")
+        student_last_name = mycursor.fetchone()[0]
+        mycursor.close()
+        mydb2.close()
         print("Please choose a start type:")
         start_type = choose_start_type()
         mycursor = mydb.cursor()
         mycursor.execute(
-            f"INSERT INTO flights (date, aircraft_registration, aircraft_flight_no, capitan_id, captain_last_name, student_id, start_type) VALUES (SYSDATE(), '{active_aircraft_id}', '{aircraft_flight_no}', '{capitan_id}', '{capitan_last_name}', '{student_id}', '{start_type}');")
+            f"INSERT INTO flights (date, aircraft_registration, aircraft_flight_no, capitan_id, captain_last_name, student_id, student_last_name, start_type) VALUES (SYSDATE(), '{active_aircraft_id}', '{aircraft_flight_no}', '{capitan_id}', '{capitan_last_name}', '{student_id}','{student_last_name}', '{start_type}');")
         mycursor.close()
         mydb.commit()
 
@@ -166,7 +172,7 @@ def main_men():
             for i in mycursor.fetchall():
                 list_of_flights.append(i)
             active_flight = list_of_flights[let_user_pick(list_of_flights)]
-            active_flight_id = list(active_flight.items())[0][1]
+            active_flight_id = active_flight[0]
             mycursor.close()
             return active_flight_id
 
@@ -208,7 +214,7 @@ def main_men():
                 list_of_flights.append(i)
             active_flight = list_of_flights[let_user_pick(list_of_flights)]
             mycursor.close()
-            active_flight_id = list(active_flight.items())[0][1]
+            active_flight_id = active_flight[0]
             return active_flight_id
 
         def add_landing_time():
