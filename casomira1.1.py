@@ -1,11 +1,11 @@
 # CASOMIRA PROGRAM LOGIC
-
+import pymysql.cursors
 def main_men():
     import pymysql.cursors
     from datetime import date
     from datetime import datetime
 
-    mydb = pymysql.connect(host='localhost', user='root', password='01041976', database='casomira1', cursorclass=pymysql.cursors.DictCursor)
+    mydb = pymysql.connect(host='localhost', user='root', password='01041976', database='casomira1')
 
     def let_user_pick(options):
         for idx, element in enumerate(options):
@@ -73,7 +73,7 @@ def main_men():
             for i in mycursor.fetchall():
                 list_of_aircrafts.append(i)
             active_aircraft = list_of_aircrafts[let_user_pick(list_of_aircrafts)]
-            active_aircraft_id = list(active_aircraft.items())[0][1]
+            active_aircraft_id = active_aircraft[0]
             print(active_aircraft_id)
             mycursor.close()
             return active_aircraft_id
@@ -107,8 +107,8 @@ def main_men():
                 list_of_people.append(i)
             active_capitan = list_of_people[let_user_pick(list_of_people)]
             mycursor.close()
-            print(list(active_capitan.items())[0][1])
-            return list(active_capitan.items())[0][1]
+            print(active_capitan[0])
+            return active_capitan[0]
 
         # CHOOSE STUDENT FROM A LIST OF PEOPLE
         def choose_student():
@@ -119,7 +119,7 @@ def main_men():
                 list_of_stu.append(i)
             active_student = list_of_stu[let_user_pick(list_of_stu)]
             mycursor.close()
-            return list(active_student.items())[0][1]
+            return active_student[0]
 
         # CHOOSE START TYPE
         def choose_start_type():
@@ -132,14 +132,20 @@ def main_men():
         aircraft_flight_no = aircraft_flight_no()
         print("Please choose a capitan:")
         capitan_id = choose_capitan()
+        mydb2 = pymysql.connect(host='localhost', user='root', password='01041976', database='casomira1')
+        mycursor = mydb2.cursor()
+        mycursor.execute(f"SELECT last_name from people where person_id = 1")
+        capitan_last_name = mycursor.fetchone()[0]
+        mycursor.close()
+        mydb2.close()
         print("Please choose a student:")
         student_id = choose_student()
+        print(student_id)
         print("Please choose a start type:")
         start_type = choose_start_type()
-        date_today = date.today()
         mycursor = mydb.cursor()
         mycursor.execute(
-            f"INSERT INTO flights (date, aircraft_registration, aircraft_flight_no, capitan_id, student_id, start_type) VALUES (SYSDATE(), '{active_aircraft_id}', '{aircraft_flight_no}', '{capitan_id}', '{student_id}', '{start_type}');")
+            f"INSERT INTO flights (date, aircraft_registration, aircraft_flight_no, capitan_id, captain_last_name, student_id, start_type) VALUES (SYSDATE(), '{active_aircraft_id}', '{aircraft_flight_no}', '{capitan_id}', '{capitan_last_name}', '{student_id}', '{start_type}');")
         mycursor.close()
         mydb.commit()
 
@@ -275,20 +281,38 @@ def main_men():
             work_with_casomira()
     main_menu()
 
+
 while True:
     main_men()
 
-# import pymysql.cursors
 
-# mydb = pymysql.connect(host='localhost', user='root', password='01041976', database='casomira1', cursorclass=pymysql.cursors.DictCursor)
+def import_casomira_to_excel():
 
-# mycursor = mydb.cursor()
-# mycursor.execute('select*from aircraft')
-# list_air = []
+    import pymysql
+    import xlwt
+    import pandas.io.sql as sql
+
+    mydb = pymysql.connect(host='localhost', user='root', password='01041976', database='casomira1')
+    df = sql.read_sql('select flight_id, aircraft_registration, capitan_id, flight_takeoff, flight_landing, last_name from flights f join people as cap on f.capitan_id = cap.person_id', mydb)
+    print(df)
+    df.to_excel('ds.xls')
+
+# import_casomira_to_excel()
+# mydb = pymysql.connect(host='localhost', user='root', password='01041976', database='casomira1')
 #
-# for item in mycursor.fetchall():
-#     list_air.append(item)
-# print(list_air)
+# mycursor = mydb.cursor()
+# mycursor.execute(f"SELECT last_name from people where person_id = {capitan_id}")
+#
+# capitan_last_name = mycursor.fetchone()[0]
+# print(capitan_last_name)
+# mydb2 = pymysql.connect(host='localhost', user='root', password='01041976', database='casomira1')
+#
+# mycursor = mydb2.cursor()
+# mycursor.execute(f"SELECT last_name from people where person_id = 1")
+# capitan_last_name = mycursor.fetchone()[0]
+# mycursor.close()
+# mydb2.close()
+
 
 
 
